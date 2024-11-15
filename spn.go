@@ -7,9 +7,17 @@ import (
 
 // Connector represent the necessary data to execute SPN requests
 type Connector struct {
-	AccessKey  string
-	SecretKey  string
-	HTTPClient *http.Client
+	AccessKey               string
+	SecretKey               string
+	HTTPClient              *http.Client
+	cachedStatus            *UserStatus
+	cachedStatusFetcherIntr chan bool // to stop the cachedUserStatusFetcher on Close()
+}
+
+func (c *Connector) Close() {
+	logger.Debug("Stopping cachedUserStatusFetcher")
+	c.cachedStatusFetcherIntr <- true
+	logger.Debug("[OK] cachedUserStatusFetcher stopped")
 }
 
 // CaptureResponse represent the JSON response from SPN
@@ -36,6 +44,9 @@ func Init(accessKey, secretKey string) (Connector, error) {
 			return http.ErrUseLastResponse
 		},
 	}
+	connector.cachedStatus = &UserStatus{}
+	connector.cachedStatusFetcherIntr = make(chan bool)
+	go connector.cachedUserStatusFetcher()
 
 	// TODO: test keys validity?
 
