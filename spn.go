@@ -39,7 +39,7 @@ func Init(accessKey, secretKey string) (Connector, error) {
 	connector.SecretKey = secretKey
 
 	connector.HTTPClient = &http.Client{
-		Timeout: time.Second * 15,
+		Timeout: time.Second * 30,
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		},
