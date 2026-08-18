@@ -74,7 +74,9 @@ func (opts CaptureOptions) Encode() url.Values {
 				urlValues.Add(field.Tag.Get("spn"), value.String())
 			}
 		} else if value.Kind() == reflect.Int {
-			urlValues.Add(field.Tag.Get("spn"), strconv.FormatInt(value.Int(), 10))
+			if value.Int() != 0 {
+				urlValues.Add(field.Tag.Get("spn"), strconv.FormatInt(value.Int(), 10))
+			}
 		} else {
 			panic("Unknown field type")
 		}
