@@ -17,7 +17,8 @@ func (c Connector) Capture(URL string, options CaptureOptions) (captureResponse 
 	// Build request
 	urlValues := options.Encode()
 	urlValues.Set("url", URL)
-	req, err := http.NewRequest("POST", "https://web.archive.org/save", strings.NewReader(urlValues.Encode()))
+	encodedValues := urlValues.Encode()
+	req, err := http.NewRequest("POST", "https://web.archive.org/save", strings.NewReader(encodedValues))
 	if err != nil {
 		return captureResponse, err
 	}
@@ -28,7 +29,7 @@ func (c Connector) Capture(URL string, options CaptureOptions) (captureResponse 
 	req.Header.Set("User-Agent", userAgent)
 
 	// Execute request
-	logger.Debug("Executing capture request", "payload", urlValues.Encode())
+	logger.Debug("Executing capture request", "payload", encodedValues)
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return captureResponse, err
