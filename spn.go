@@ -50,7 +50,7 @@ func Init(accessKey, secretKey string) (Connector, error) {
 	}
 	connector.cachedStatus = &UserStatus{}
 	connector.cachedStatusMu = &sync.Mutex{}
-	connector.cachedStatusFetcherIntr = make(chan bool)
+	connector.cachedStatusFetcherIntr = make(chan bool, 1)
 	go connector.cachedUserStatusFetcher()
 
 	// TODO: test keys validity?
