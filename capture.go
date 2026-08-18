@@ -33,6 +33,7 @@ func (c Connector) Capture(URL string, options CaptureOptions) (captureResponse 
 	if err != nil {
 		return captureResponse, err
 	}
+	defer resp.Body.Close()
 
 	body, _ := io.ReadAll(resp.Body)
 	logger.Debug("Capture response", "status", resp.StatusCode, "body", string(body))

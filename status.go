@@ -53,6 +53,7 @@ func (c Connector) GetCaptureStatus(jobID string) (captureStatus CaptureStatus, 
 	if err != nil {
 		return captureStatus, err
 	}
+	defer resp.Body.Close()
 
 	json.NewDecoder(resp.Body).Decode(&captureStatus)
 
@@ -86,6 +87,7 @@ func (c Connector) GetUserStatus() (userStatus UserStatus, err error) {
 	if err != nil {
 		return userStatus, err
 	}
+	defer resp.Body.Close()
 
 	json.NewDecoder(resp.Body).Decode(&userStatus)
 
