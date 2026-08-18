@@ -25,6 +25,7 @@ func (c Connector) Capture(URL string, options CaptureOptions) (captureResponse 
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Authorization", "LOW "+c.AccessKey+":"+c.SecretKey)
+	req.Header.Set("User-Agent", userAgent)
 
 	// Execute request
 	logger.Debug("Executing capture request", "payload", urlValues.Encode())

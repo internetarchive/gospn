@@ -46,6 +46,7 @@ func (c Connector) GetCaptureStatus(jobID string) (captureStatus CaptureStatus, 
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Authorization", "LOW "+c.AccessKey+":"+c.SecretKey)
+	req.Header.Set("User-Agent", userAgent)
 
 	// Execute request
 	resp, err := c.HTTPClient.Do(req)
@@ -78,6 +79,7 @@ func (c Connector) GetUserStatus() (userStatus UserStatus, err error) {
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Authorization", "LOW "+c.AccessKey+":"+c.SecretKey)
+	req.Header.Set("User-Agent", userAgent)
 
 	// Execute request
 	resp, err := c.HTTPClient.Do(req)
