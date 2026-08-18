@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+const userAgent = "gospn (+https://github.com/internetarchive/gospn)"
+
 // Connector represent the necessary data to execute SPN requests
 type Connector struct {
 	AccessKey               string
