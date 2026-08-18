@@ -2,6 +2,7 @@ package spn
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -55,7 +56,13 @@ func (c Connector) GetCaptureStatus(jobID string) (captureStatus CaptureStatus, 
 	}
 	defer resp.Body.Close()
 
-	json.NewDecoder(resp.Body).Decode(&captureStatus)
+	if resp.StatusCode != 200 {
+		return captureStatus, fmt.Errorf("SPN GetCaptureStatus failed with status code %d", resp.StatusCode)
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&captureStatus); err != nil {
+		return captureStatus, fmt.Errorf("Failed to unmarshal JSON: %s", err)
+	}
 
 	if captureStatus.Outlinks == nil {
 		captureStatus.Outlinks = []string{""}
@@ -89,7 +96,13 @@ func (c Connector) GetUserStatus() (userStatus UserStatus, err error) {
 	}
 	defer resp.Body.Close()
 
-	json.NewDecoder(resp.Body).Decode(&userStatus)
+	if resp.StatusCode != 200 {
+		return userStatus, fmt.Errorf("SPN GetUserStatus failed with status code %d", resp.StatusCode)
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&userStatus); err != nil {
+		return userStatus, fmt.Errorf("Failed to unmarshal JSON: %s", err)
+	}
 
 	return userStatus, nil
 }
