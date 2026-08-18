@@ -119,7 +119,10 @@ func (c *Connector) cachedUserStatusFetcher() {
 		default:
 		}
 
-		if time.Since(lastFetch) < time.Second*10 && c.cachedStatus.Available > 2 {
+		c.cachedStatusMu.Lock()
+		skip := time.Since(lastFetch) < time.Second*10 && c.cachedStatus.Available > 2
+		c.cachedStatusMu.Unlock()
+		if skip {
 			time.Sleep(time.Second)
 			continue
 		}
@@ -141,7 +144,9 @@ func (c *Connector) cachedUserStatusFetcher() {
 		}
 
 		logger.Debug("User status fetched", "status", userStatus)
+		c.cachedStatusMu.Lock()
 		c.cachedStatus.Update(userStatus)
+		c.cachedStatusMu.Unlock()
 		logger.Debug("cachedStatus updated", "cachedStatus", c.cachedStatus)
 	}
 }
@@ -149,12 +154,15 @@ func (c *Connector) cachedUserStatusFetcher() {
 // Wait until a capture slot is available
 func (c Connector) GetAvailableCaptureSlot() (err error) {
 	for {
+		c.cachedStatusMu.Lock()
 		if c.cachedStatus.Available > 0 {
 			c.cachedStatus.Available--
 			c.cachedStatus.Processing++
+			c.cachedStatusMu.Unlock()
 			logger.Debug("AwaitAvailableSlot return", "cachedStatus", c.cachedStatus)
 			return nil
 		}
+		c.cachedStatusMu.Unlock()
 
 		logger.Debug("AwaitAvailableSlot waiting")
 		time.Sleep(time.Second)

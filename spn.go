@@ -2,6 +2,7 @@ package spn
 
 import (
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -13,7 +14,8 @@ type Connector struct {
 	SecretKey               string
 	HTTPClient              *http.Client
 	cachedStatus            *UserStatus
-	cachedStatusFetcherIntr chan bool // to stop the cachedUserStatusFetcher on Close()
+	cachedStatusMu          *sync.Mutex // protects cachedStatus, shared across copies of Connector
+	cachedStatusFetcherIntr chan bool   // to stop the cachedUserStatusFetcher on Close()
 }
 
 func (c *Connector) Close() {
@@ -47,6 +49,7 @@ func Init(accessKey, secretKey string) (Connector, error) {
 		},
 	}
 	connector.cachedStatus = &UserStatus{}
+	connector.cachedStatusMu = &sync.Mutex{}
 	connector.cachedStatusFetcherIntr = make(chan bool)
 	go connector.cachedUserStatusFetcher()
 
